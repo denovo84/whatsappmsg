@@ -2,35 +2,47 @@
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-// Read and decode JSON
+// Read and decode JSON input
 $input = file_get_contents("php://input");
 $data = json_decode($input, true);
 $from = $data['data']['from'] ?? '';
 $body = strtolower(trim($data['data']['body'] ?? ''));
 
-// Simple state management using a file (for demo purposes)
+// State management per user
 $stateFile = "state_" . md5($from) . ".txt";
 $state = file_exists($stateFile) ? file_get_contents($stateFile) : 'start';
 
 switch ($state) {
     case 'start':
-        if (in_array($body, ['hi', 'hello'])) {
-            $reply = "Hello 👋! Welcome to Customer Support.\nPlease type the number:\n 1. Report a complaint\n 2. Check complaint status\n 3. Check complaint status";
-            file_put_contents($stateFile, 'menu');
-        } else {
-            $reply = "Please type 'hi' or 'hello' to begin.";
-        }
+        $reply = "Welcome to Customer Support.\nPlease reply with a number:\n1️⃣ Report a Complaint\n2️⃣ Check Complaint Status\n3️⃣ Product Inquiry\n4️⃣ Talk to Support Agent\n5️⃣ Company Information";
+        file_put_contents($stateFile, 'menu');
         break;
 
     case 'menu':
-        if ($body == '1') {
-            $reply = "Please describe your complaint in one message.";
-            file_put_contents($stateFile, 'awaiting_complaint');
-        } elseif ($body == '2') {
-            $reply = "🔍 Complaint status checking is under development. Please try again later.";
-            unlink($stateFile);
-        } else {
-          //  $reply = "Invalid option. Please type 1 or 2.";
+        switch ($body) {
+            case '1':
+                $reply = "Please describe your complaint in detail.";
+                file_put_contents($stateFile, 'awaiting_complaint');
+                break;
+            case '2':
+                $reply = "🔍 Complaint status checking is under development. Please try again later.";
+                unlink($stateFile);
+                break;
+            case '3':
+                $reply = "📦 Please type your product-related question.";
+                file_put_contents($stateFile, 'product_inquiry');
+                break;
+            case '4':
+                $reply = "👨‍💼 A support agent will contact you shortly. Thank you!";
+                unlink($stateFile);
+                break;
+            case '5':
+                $reply = "🏢 We are a customer-focused company offering quality products and support. Visit our website for more info.";
+                unlink($stateFile);
+                break;
+            default:
+                $reply = "Invalid input. Please reply with a number:\n1️⃣ Report a Complaint\n2️⃣ Check Complaint Status\n3️⃣ Product Inquiry\n4️⃣ Talk to Support Agent\n5️⃣ Company Information";
+                break;
         }
         break;
 
@@ -38,12 +50,20 @@ switch ($state) {
         $complaint = htmlspecialchars($body);
         $log = "[" . date("Y-m-d H:i:s") . "] From: $from\nComplaint: $complaint\n\n";
         file_put_contents("complaints_log.txt", $log, FILE_APPEND);
-        $reply = "✅ Thank you! Your complaint has been recorded. Our team will get back to you shortly.";
+        $reply = "✅ Your complaint has been recorded. Our team will get back to you shortly.";
+        unlink($stateFile);
+        break;
+
+    case 'product_inquiry':
+        $inquiry = htmlspecialchars($body);
+        $log = "[" . date("Y-m-d H:i:s") . "] From: $from\nProduct Inquiry: $inquiry\n\n";
+        file_put_contents("inquiries_log.txt", $log, FILE_APPEND);
+        $reply = "📨 Thank you! Your inquiry has been received. We'll respond soon.";
         unlink($stateFile);
         break;
 
     default:
-        $reply = "Something went wrong. Please type 'hi' to start again.";
+        $reply = "Session expired or invalid input. Please reply with a number:\n1️⃣ Report a Complaint\n2️⃣ Check Complaint Status\n3️⃣ Product Inquiry\n4️⃣ Talk to Support Agent\n5️⃣ Company Information";
         unlink($stateFile);
         break;
 }
