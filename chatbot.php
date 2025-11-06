@@ -41,7 +41,7 @@ switch ($state) {
                 unlink($stateFile);
                 break;
             default:
-                $reply = "Invalid input. Please reply with a number:\n1️⃣ Report a Complaint\n2️⃣ Check Complaint Status\n3️⃣ Product Inquiry\n4️⃣ Talk to Support Agent\n5️⃣ Company Information";
+              //  $reply = "Invalid input. Please reply with a number:\n1️⃣ Report a Complaint\n2️⃣ Check Complaint Status\n3️⃣ Product Inquiry\n4️⃣ Talk to Support Agent\n5️⃣ Company Information";
                 break;
         }
         break;
