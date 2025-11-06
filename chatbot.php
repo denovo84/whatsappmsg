@@ -30,7 +30,7 @@ switch ($state) {
             $reply = "🔍 Complaint status checking is under development. Please try again later.";
             unlink($stateFile);
         } else {
-            $reply = "Invalid option. Please type 1 or 2.";
+          //  $reply = "Invalid option. Please type 1 or 2.";
         }
         break;
 
