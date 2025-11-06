@@ -28,7 +28,7 @@ if ($body == "hi" || $body == "hello") {
 } elseif ($body == "date") {
     $reply = "📅 Today is: " . date("d M Y");
 } else {
-    $reply = "I didn’t understand that. Try 'hi', 'time', or 'date'.";
+   // $reply = "I didn’t understand that. Try 'hi', 'time', or 'date'.";
 }
 
 // Send reply
@@ -56,4 +56,5 @@ function sendMessage($to, $message) {
 // Respond OK
 http_response_code(200);
 echo "OK";
+
 ?>
